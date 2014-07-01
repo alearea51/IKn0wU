@@ -1,49 +1,60 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
+import optparse
+import PyPDF2
+from PyPDF2 import PdfFileReader
+import datetime
 import subprocess
 import mechanize, urllib, urllib2
 from bs4 import BeautifulSoup
 from urllib import FancyURLopener
 from HTMLParser import HTMLParser
 
-resp = "n"
-while resp=="n":
 
-    outfd = open('archivo_out', 'w+')
-    errfd = open('archivo_err', 'w+')
 
-    print ("==========================================================================")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("=   W3lc0m3 t0                                                           =")
-    print ("=   _ _ _   _ _   _ _                                       __      __   =")
-    print ("=  |      ||   | /  /  _ _ _      \_|_|_/ _ _          _ _ |  |    |  |  =")
-    print ("=  |_    _||   |/  /  |      \    / / \ \ \  \        /  / |  |    |  |  =")
-    print ("=    |  |  |      /   |       \  / _ _ _ \ \  \      /  /  |  |    |  |  =")
-    print ("=    |  |  |      \   |        \ || / \ ||  \  \ _  /  /   |  |    |  |  =")
-    print ("=   _|  |_ |   \   \  |    _   | ||_\_/_||   \  / \/  /    |   \__/   |  =")
-    print ("=  |      ||   |\   \ |   ||   | \ \   / /    \      /     |          |  =")
-    print ("=  |_ _ _ ||_ _| \_ _\|_ _||_ _|  \_\_/_/      \_/\_/       \_ _ _ _ /   =")
-    print ("=                                 / | | \                                =")
-    print ("=                                                     by Sephiroot       =")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("=                                                                        =")
-    print ("==========================================================================")
+outfd = open('archivo_out', 'w+')
+errfd = open('archivo_err', 'w+')
+
+print ("==========================================================================")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("=   W3lc0m3 t0                                                           =")
+print ("=   _ _ _   _ _   _ _                                       __      __   =")
+print ("=  |      ||   | /  /  _ _ _      \_|_|_/ _ _          _ _ |  |    |  |  =")
+print ("=  |_    _||   |/  /  |      \    / / \ \ \  \        /  / |  |    |  |  =")
+print ("=    |  |  |      /   |       \  / _ _ _ \ \  \      /  /  |  |    |  |  =")
+print ("=    |  |  |      \   |        \ || / \ ||  \  \ _  /  /   |  |    |  |  =")
+print ("=   _|  |_ |   \   \  |    _   | ||_\_/_||   \  / \/  /    |   \__/   |  =")
+print ("=  |      ||   |\   \ |   ||   | \ \   / /    \      /     |          |  =")
+print ("=  |_ _ _ ||_ _| \_ _\|_ _||_ _|  \_\_/_/      \_/\_/       \_ _ _ _ /   =")
+print ("=                                 / | | \                                =")
+print ("=                                                     by Sephiroot       =")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("=                                                                        =")
+print ("==========================================================================")
+print
+
+opt = "1"
+while opt < "6":
     print
-
+    print("-----------------------------------------------------------------------")
+    print
     print("1 - Whois para Dominios de Argentina")
-    print("2 - Buscar Datos")
-    print("3 - Buscar Datos (conociendo nombre completo y CUIT)")
-    print("4 - Buscar Nro de Telefono Ingresando Titular")
+    print("2 - Buscar Datos de una persona")
+    print("3 - Buscar Datos de una persona (conociendo nombre completo y CUIT)")
+    print("4 - Buscar Nro de Telefono y direccion Ingresando Titular")
+    print("5 - Buscar Titular y direccion ingresando Nro de Telefono")
+    print("6 - Obtener metadatos de archivo PDF")
+    print("7 - Salir")
     print
-
     opt = raw_input("Select an option:")
     if opt == "1":
 
@@ -78,18 +89,29 @@ while resp=="n":
         for each_div in soup.findAll('div',{'class':'ui-dt-c'}):
                 print each_div.findAll(text=True)
 
+        raw_input()    
     elif opt == "2":
         
         br = mechanize.Browser()
         br.addheaders = [('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.6')]
-        nom = raw_input("Introduce nombre: ")
+        nom = raw_input("Introduce nombre (sin apellido): ")
         ape = raw_input("Introduce apellido: ")
-        anid = raw_input("Anio desde: ")
-        anih = raw_input("Anio hasta: ")
-        print ("Please wait...")
+        edad = raw_input("Introduce edad aproximada (si la desconoce ingrese 0): ")
+        if edad == "0":   
+              print ("Debera ingresar rango de anios")
+              print
+              anid = raw_input("Anio desde: ")
+              anih = raw_input("Anio hasta: ")
+              print ("Please wait...")
+        else:
+              actual = datetime.date.today().year 
+              anid = (int(actual) - int(edad)) - 3
+              anih = (int(actual) - int(edad)) + 3
+              print ("Se mostraran resultados entre "+str(int(edad)- 3)+" y "+str(int(edad)+ 3)+" anios")
+        
         #resp = br.open('http://buscardatos.com')
         #print resp.get_data
-        br.open("http://buscardatos.com/Personas/Apellido/apellido.php?nombre="+nom+"&apellido="+ape+"&Sex=&desde="+anid+"&hasta="+anih)
+        br.open("http://buscardatos.com/Personas/Apellido/apellido.php?nombre="+nom+"&apellido="+ape+"&Sex=&desde="+str(anid)+"&hasta="+str(anih))
         
         htmld = br.response().read()
         class HTMLCleaner(HTMLParser):
@@ -120,10 +142,10 @@ while resp=="n":
                    i = 0
                 
                 #print cabecera[i]
-                print (cabecera[i]+": ",td.find(text=True))   
+                print str((cabecera[i]+": ",td.find(text=True))).decode('string_escape')     
                 i = i + 1
                 
-
+        raw_input()
     elif opt == "3":
         
         br = mechanize.Browser()
@@ -140,8 +162,8 @@ while resp=="n":
         soup = BeautifulSoup(htmld)
         cla = soup.findAll('class') 
         for cla in soup.findAll('p'):
-                print str(cla.findAll(text=True))
-                print
+                 print str(cla.findAll(text=True))
+                 print
 
 
 
@@ -173,21 +195,29 @@ while resp=="n":
         #for each_div in soup.findAll('li',{'class':'resultado'}):
                 #print each_div.findAll(text=True)
 
-        cla = soup.findAll('li' , {'class' : 'resultado'}) 
+        cla = soup.findAll('li' , {'class' : 'resultado_telefono'}) 
         for cla in soup.findAll('p'):
                 
                 print cla.findAll(text=True)
                 print
-                
-    else: 
+        raw_input()   
+   
+            
+
+           
+ 
+    elif opt == '5': 
+        area = str(raw_input("Ingrese Codigo de Area: "))
+        num = str(raw_input("Ingrese Numero: "))
         br = mechanize.Browser()
         br.addheaders = [('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.6')]
-        #resp = br.open('http://buscardatos.com')
-        print ("Please wait...")
-        br.open("http://buscardatos.com/Personas/DNI/")
         
-        br.select_form(name="input")
-        br['DNI']= "31616783"
+        print ("Please wait...")
+        br.open("http://www.telexplorer.com.ar/fletes")
+        
+        br.select_form(nr=1)
+        br['area']= area
+        br['telefono']= num
         #br.find_control(name='busquedaDominioForm2:j_idt56').value = [ext] 
         br.submit()
         htmld = br.response().read()
@@ -199,8 +229,33 @@ while resp=="n":
              return self.container
         h = HTMLCleaner()
         h.feed(htmld)
-        print h.container
+        #print h.container
+        soup = BeautifulSoup(htmld)
 
-    print
-    resp = raw_input("Desea salir? s/n  ")
+        
+        #for each_div in soup.findAll('li',{'class':'resultado'}):
+                #print each_div.findAll(text=True)
+
+        cla = soup.findAll('li' , {'class' : 'resultado_titulo'}) 
+        for cla in soup.findAll('p'):
+                
+                print cla.findAll(text=True)
+                print
+        raw_input()
+
+    elif opt == '6':
+
+         pdf_name= raw_input("Ingrese nombre de Archivo PDF: ")
+         print 
+         fileName = pdf_name
+         pdfFile = PdfFileReader(file(fileName, 'rb'))
+         meta = pdfFile.getDocumentInfo()
+         print ' - Documento: ' + str(fileName)
+         for metaItem in meta:
+             print ' - ' + metaItem + ':' + meta[metaItem]
+  
+    else:
+        print
+        print ("GoodBye!")
+    
     
