@@ -6,4 +6,6 @@ Version Ultra Beta! De a poco iré agregando nuevas funcionalidades.
 
 Es necesario para su funcionamiento instalar los módulos Mechanize y Beautifulsoup4
 
-Enjoy!
+Nueva Funcionalidad: Extracción de metadatos de archivos PDF
+
+requiere el uso de la libreria PyPDF2.
