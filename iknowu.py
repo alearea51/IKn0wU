@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import optparse
+from function import diccionario
 import PyPDF2
 from PyPDF2 import PdfFileReader
 import datetime
@@ -43,7 +44,7 @@ print ("========================================================================
 print
 
 opt = "1"
-while opt < "6":
+while opt < "7":
     print
     print("-----------------------------------------------------------------------")
     print
@@ -53,7 +54,8 @@ while opt < "6":
     print("4 - Buscar Nro de Telefono y direccion Ingresando Titular")
     print("5 - Buscar Titular y direccion ingresando Nro de Telefono")
     print("6 - Obtener metadatos de archivo PDF")
-    print("7 - Salir")
+    print("7 - Generar diccionario a partir de datos personales")
+    print("8 - Salir")
     print
     opt = raw_input("Select an option:")
     if opt == "1":
@@ -243,6 +245,18 @@ while opt < "6":
                 print
         raw_input()
 
+    elif opt == '7':
+
+         nomb = raw_input("Ingrese nombre o alias: ")
+         apel = raw_input("Ingrese apellido: ")
+         edad = raw_input("Ingrese edad: ")
+         gus =  raw_input("Ingrese gustos de la persona: ")
+         org =  raw_input("Ingrese organizacion para la cual trabaja: ")
+         actual = datetime.date.today().year 
+         anio = (int(actual) - int(edad))
+         
+         diccionario(nomb,apel,edad,gus,org,anio,actual)
+         
     elif opt == '6':
 
          pdf_name= raw_input("Ingrese nombre de Archivo PDF: ")
