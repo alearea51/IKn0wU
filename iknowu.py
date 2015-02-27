@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import optparse
+import re
 from function import diccionario
 import PyPDF2
 from PyPDF2 import PdfFileReader
@@ -53,9 +54,10 @@ while opt < "7":
     print("3 - Buscar Datos de una persona (conociendo nombre completo y CUIT)")
     print("4 - Buscar Nro de Telefono y direccion Ingresando Titular")
     print("5 - Buscar Titular y direccion ingresando Nro de Telefono")
-    print("6 - Obtener metadatos de archivo PDF")
+    print("6 - Obtener direcciones de correo de sitio web")
     print("7 - Generar diccionario a partir de datos personales")
-    print("8 - Salir")
+    print("8 - Obtener metadatos de archivo PDF")      
+    print("9 - Salir")
     print
     opt = raw_input("Select an option:")
     if opt == "1":
@@ -81,7 +83,7 @@ while opt < "7":
         
         br.select_form(nr=2)
         br['busquedaDominioForm2:dominio']= dmn
-        br.find_control(name='busquedaDominioForm2:j_idt56').value = [ext] 
+        br.find_control(name='busquedaDominioForm2:j_idt57').value = [ext] 
         br.submit()
         htmld = br.response().read()
         
@@ -175,9 +177,16 @@ while opt < "7":
         br.addheaders = [('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.6')]
         
         print ("Please wait...")
-        br.open("http://www.telexplorer.com.ar/abogados")
+        br.open("http://www.telexplorer.com.ar/fletes")
         
-        br.select_form(nr=0)
+        #br.select_form(form_res1)
+
+        def is_sblock_form(form):
+             return "id" in form.attrs and form.attrs['id'] == "form_res1"
+
+        br.select_form(predicate=is_sblock_form)
+
+        
         br['nombre']= nom
         #br.find_control(name='busquedaDominioForm2:j_idt56').value = [ext] 
         br.submit()
@@ -197,12 +206,19 @@ while opt < "7":
         #for each_div in soup.findAll('li',{'class':'resultado'}):
                 #print each_div.findAll(text=True)
 
-        cla = soup.findAll('li' , {'class' : 'resultado_telefono'}) 
-        for cla in soup.findAll('p'):
+        cla = soup.findAll({'class' : 'groupTitle'} and {'class':'searchPhone'}) 
+        for cla in soup.findAll('h2'):
                 
                 print cla.findAll(text=True)
-                print
-        raw_input()   
+                print 
+        
+
+        cla = soup.findAll({'class' : 'groupTitle'} and {'class':'searchPhone'}) 
+        for cla in soup.findAll('span'):
+                
+                print cla.findAll(text=True)
+                print 
+        raw_input()
    
             
 
@@ -231,12 +247,8 @@ while opt < "7":
              return self.container
         h = HTMLCleaner()
         h.feed(htmld)
-        #print h.container
         soup = BeautifulSoup(htmld)
 
-        
-        #for each_div in soup.findAll('li',{'class':'resultado'}):
-                #print each_div.findAll(text=True)
 
         cla = soup.findAll('li' , {'class' : 'resultado_titulo'}) 
         for cla in soup.findAll('p'):
@@ -245,6 +257,20 @@ while opt < "7":
                 print
         raw_input()
 
+    elif opt == '6':    
+
+         site = raw_input("Ingrese sitio web en la forma 'http://www.dominio.com': ")
+         print 
+         br = mechanize.Browser()
+         br.addheaders = [('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.6')] 
+         page = br.open(site)
+         source = page.read()
+         soup = BeautifulSoup(source)
+       
+         
+         for cla in soup.findAll(href=re.compile("mailto")):
+          print(cla.get('href'))
+          
     elif opt == '7':
 
          nomb = raw_input("Ingrese nombre o alias: ")
@@ -257,7 +283,7 @@ while opt < "7":
          
          diccionario(nomb,apel,edad,gus,org,anio,actual)
          
-    elif opt == '6':
+    elif opt == '8':
 
          pdf_name= raw_input("Ingrese nombre de Archivo PDF: ")
          print 
