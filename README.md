@@ -6,6 +6,4 @@ Version Ultra Beta! De a poco iré agregando nuevas funcionalidades.
 
 Es necesario para su funcionamiento instalar los módulos Mechanize y Beautifulsoup4
 
-Nueva Funcionalidad: Extracción de metadatos de archivos PDF
-
-requiere el uso de la libreria PyPDF2.
+Nueva Funcionalidad: Generar diccionario para fuerza bruta a través de datos personales obtenidos.
